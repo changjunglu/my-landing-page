@@ -10,11 +10,17 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
+    "@types/react-intl": "^2.3.18",
+    "dompurify": "^3.2.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
+    "react-hook-form": "^7.60.0",
+    "react-intl": "^7.1.11",
     "react-router-dom": "^6.8.0",
-    "styled-components": "^5.3.6"
+    "react-scripts": "5.0.1",
+    "styled-components": "^5.3.6",
+    "zod": "^3.25.74"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
@@ -41,4 +47,4 @@
   ],
   "author": "Chang Jung Lu",
   "license": "MIT"
-} 
+}

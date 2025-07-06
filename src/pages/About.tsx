@@ -1,13 +1,18 @@
 import React from 'react';
 import './About.css';
+import { FormattedMessage } from 'react-intl';
 
-const About = () => {
+const About: React.FC = () => {
   return (
     <div className="about">
       <section className="about-hero">
         <div className="container">
-          <h1 className="section-title">關於我</h1>
-          <p className="section-subtitle">了解更多關於我的背景和專業經驗</p>
+          <h1 className="section-title">
+            <FormattedMessage id="about.title" defaultMessage="關於我" />
+          </h1>
+          <p className="section-subtitle">
+            <FormattedMessage id="about.subtitle" defaultMessage="了解更多關於我的背景和專業經驗" />
+          </p>
         </div>
       </section>
 

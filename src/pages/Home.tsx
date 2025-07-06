@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
+import { FormattedMessage } from 'react-intl';
 
-const Home = () => {
+const Home: React.FC = () => {
   return (
     <div className="home">
       {/* 英雄區塊 */}
@@ -11,27 +12,27 @@ const Home = () => {
           <div className="hero-content">
             <div className="hero-text">
               <h1 className="hero-title">
-                你好，我是 <span className="highlight">Chang Jung Lu</span>
+                <FormattedMessage id="home.greeting" defaultMessage="你好，我是 " />
+                <span className="highlight">Chang Jung Lu</span>
               </h1>
               <p className="hero-subtitle">
-                專業的軟體開發工程師，專精於 React.js、Node.js 和雲端技術
+                <FormattedMessage id="home.subtitle" defaultMessage="專業的軟體開發工程師，專精於 React.js、Node.js 和雲端技術" />
               </p>
               <p className="hero-description">
-                我致力於創造優秀的數位體驗，結合創新技術與用戶需求，
-                為企業提供高品質的軟體解決方案。
+                <FormattedMessage id="home.description" defaultMessage="我致力於創造優秀的數位體驗，結合創新技術與用戶需求，為企業提供高品質的軟體解決方案。" />
               </p>
               <div className="hero-buttons">
                 <Link to="/projects" className="btn btn-primary">
-                  查看作品
+                  <FormattedMessage id="home.viewProjects" defaultMessage="查看作品" />
                 </Link>
                 <Link to="/contact" className="btn btn-secondary">
-                  聯絡我
+                  <FormattedMessage id="home.contactMe" defaultMessage="聯絡我" />
                 </Link>
               </div>
             </div>
             <div className="hero-image">
               <div className="profile-placeholder">
-                <span>👨‍💻</span>
+                <span role="img" aria-label="開發者">👨‍💻</span>
               </div>
             </div>
           </div>

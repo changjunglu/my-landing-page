@@ -8,7 +8,7 @@ import About from './pages/About';
 import Projects from './pages/Projects';
 import Contact from './pages/Contact';
 
-function App() {
+const App: React.FC = () => {
   return (
     <Router>
       <div className="App">
@@ -25,6 +25,6 @@ function App() {
       </div>
     </Router>
   );
-}
+};
 
 export default App; 
