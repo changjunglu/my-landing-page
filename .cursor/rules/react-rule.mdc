@@ -1,0 +1,500 @@
+// 語言檔案結構
+interface Messages {
+  'app.title': string;
+  'nav.home': string;
+  'nav.about': string;
+  'nav.contact': string;
+  'user.greeting': string;
+  'user.profile.edit': string;
+  'form.validation.required': string;
+  'form.validation.email': string;
+  'button.save': string;
+  'button.cancel': string;
+  'error.network': string;
+  'success.saved': string;
+}
+
+// 語言資源
+const messages: Record<string, Messages> = {
+  'zh-TW': {
+    'app.title': 'React 應用程式',
+    'nav.home': '首頁',
+    'nav.about': '關於我們',
+    'nav.contact': '聯絡我們',
+    'user.greeting': '您好，{name}！',
+    'user.profile.edit': '編輯個人資料',
+    'form.validation.required': '此欄位為必填',
+    'form.validation.email': '請輸入有效的電子郵件地址',
+    'button.save': '儲存',
+    'button.cancel': '取消',
+    'error.network': '網路連線錯誤',
+    'success.saved': '儲存成功',
+  },
+  'en-US': {
+    'app.title': 'React Application',
+    'nav.home': 'Home',
+    'nav.about': 'About',
+    'nav.contact': 'Contact',
+    'user.greeting': 'Hello, {name}!',
+    'user.profile.edit': 'Edit Profile',
+    'form.validation.required': 'This field is required',
+    'form.validation.email': 'Please enter a valid email address',
+    'button.save': 'Save',
+    'button.cancel': 'Cancel',
+    'error.network': 'Network connection error',
+    'success.saved': 'Saved successfully',
+  },
+  'ja-JP': {
+    'app.title': 'Reactアプリケーション',
+    'nav.home': 'ホーム',
+    'nav.about': 'について',
+    'nav.contact': 'お問い合わせ',
+    'user.greeting': 'こんにちは、{name}さん！',
+    'user.profile.edit': 'プロフィール編集',
+    'form.validation.required': 'この項目は必須です',
+    'form.validation.email': '有効なメールアドレスを入力してください',
+    'button.save': '保存',
+    'button.cancel': 'キャンセル',
+    'error.network': 'ネットワーク接続エラー',
+    'success.saved': '保存されました',
+  },
+};
+
+// ✓ 國際化 Context 和 Hook
+interface I18nContextValue {
+  locale: string;
+  setLocale: (locale: string) => void;
+  availableLocales: Array<{ code: string; name: string; flag: string }>;
+  isRTL: boolean;
+}
+
+const I18nContext = createContext<I18nContextValue | null>(null);
+
+const useI18n = () => {
+  const context = useContext(I18nContext);
+  if (!context) {
+    throw new Error('useI18n must be used within I18nProvider');
+  }
+  return context;
+};
+
+const I18nProvider = ({ children }: { children: ReactNode }) => {
+  const [locale, setLocale] = useState(() => {
+    // 優先順序：localStorage > 瀏覽器語言 > 預設語言
+    const savedLocale = localStorage.getItem('app-locale');
+    if (savedLocale && messages[savedLocale]) {
+      return savedLocale;
+    }
+    
+    const browserLocale = navigator.language;
+    if (messages[browserLocale]) {
+      return browserLocale;
+    }
+    
+    // 嘗試匹配語言代碼（忽略地區）
+    const languageCode = browserLocale.split('-')[0];
+    const matchingLocale = Object.keys(messages).find(key => key.startsWith(languageCode));
+    
+    return matchingLocale || 'zh-TW';
+  });
+  
+  const availableLocales = [
+    { code: 'zh-TW', name: '繁體中文', flag: '🇹🇼' },
+    { code: 'en-US', name: 'English', flag: '🇺🇸' },
+    { code: 'ja-JP', name: '日本語', flag: '🇯🇵' },
+  ];
+  
+  const isRTL = ['ar', 'he', 'fa'].includes(locale.split('-')[0]);
+  
+  const handleSetLocale = useCallback((newLocale: string) => {
+    setLocale(newLocale);
+    localStorage.setItem('app-locale', newLocale);
+    
+    // 更新 HTML lang 屬性
+    document.documentElement.lang = newLocale;
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+  }, [isRTL]);
+  
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+  }, [locale, isRTL]);
+  
+  return (
+    <I18nContext.Provider
+      value={{
+        locale,
+        setLocale: handleSetLocale,
+        availableLocales,
+        isRTL,
+      }}
+    >
+      <IntlProvider
+        locale={locale}
+        messages={messages[locale]}
+        defaultLocale="zh-TW"
+        onError={(error) => {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('React Intl Error:', error);
+          }
+        }}
+      >
+        {children}
+      </IntlProvider>
+    </I18nContext.Provider>
+  );
+};
+
+// ✓ 語言切換器組件
+const LanguageSwitcher = () => {
+  const { locale, setLocale, availableLocales } = useI18n();
+  
+  return (
+    <select
+      value={locale}
+      onChange={(e) => setLocale(e.target.value)}
+      aria-label="選擇語言"
+      className="language-switcher"
+    >
+      {availableLocales.map((lang) => (
+        <option key={lang.code} value={lang.code}>
+          {lang.flag} {lang.name}
+        </option>
+      ))}
+    </select>
+  );
+};
+
+// ✓ 國際化表單組件
+const InternationalizedForm = () => {
+  const intl = useIntl();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    birthDate: '',
+    salary: 0,
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = intl.formatMessage({ id: 'form.validation.required' });
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = intl.formatMessage({ id: 'form.validation.required' });
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = intl.formatMessage({ id: 'form.validation.email' });
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      console.log('Form submitted:', formData);
+    }
+  };
+  
+  return (
+    <form onSubmit={handleSubmit} className="intl-form">
+      <h2>
+        <FormattedMessage id="user.profile.edit" />
+      </h2>
+      
+      <div className="form-group">
+        <label htmlFor="name">
+          <FormattedMessage id="form.field.name" defaultMessage="姓名" />
+          <span aria-label={intl.formatMessage({ id: 'form.required.indicator' })}>*</span>
+        </label>
+        <input
+          id="name"
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          placeholder={intl.formatMessage({ 
+            id: 'form.placeholder.name', 
+            defaultMessage: '請輸入您的姓名' 
+          })}
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? 'name-error' : undefined}
+        />
+        {errors.name && (
+          <div id="name-error" role="alert" className="error-message">
+            {errors.name}
+          </div>
+        )}
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="email">
+          <FormattedMessage id="form.field.email" defaultMessage="電子郵件" />
+          <span aria-label={intl.formatMessage({ id: 'form.required.indicator' })}>*</span>
+        </label>
+        <input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+          placeholder={intl.formatMessage({ 
+            id: 'form.placeholder.email', 
+            defaultMessage: '請輸入電子郵件地址' 
+          })}
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? 'email-error' : undefined}
+        />
+        {errors.email && (
+          <div id="email-error" role="alert" className="error-message">
+            {errors.email}
+          </div>
+        )}
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="birthDate">
+          <FormattedMessage id="form.field.birthDate" defaultMessage="出生日期" />
+        </label>
+        <input
+          id="birthDate"
+          type="date"
+          value={formData.birthDate}
+          onChange={(e) => setFormData(prev => ({ ...prev, birthDate: e.target.value }))}
+        />
+        {formData.birthDate && (
+          <div className="field-preview">
+            <FormattedMessage id="form.preview.birthDate" defaultMessage="顯示為: " />
+            <FormattedDate
+              value={new Date(formData.birthDate)}
+              year="numeric"
+              month="long"
+              day="numeric"
+            />
+          </div>
+        )}
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="salary">
+          <FormattedMessage id="form.field.salary" defaultMessage="薪資" />
+        </label>
+        <input
+          id="salary"
+          type="number"
+          value={formData.salary}
+          onChange={(e) => setFormData(prev => ({ ...prev, salary: Number(e.target.value) }))}
+        />
+        {formData.salary > 0 && (
+          <div className="field-preview">
+            <FormattedMessage id="form.preview.salary" defaultMessage="顯示為: " />
+            <FormattedNumber
+              value={formData.salary}
+              style="currency"
+              currency="TWD"
+            />
+          </div>
+        )}
+      </div>
+      
+      <div className="form-actions">
+        <button type="submit" className="btn-primary">
+          <FormattedMessage id="button.save" />
+        </button>
+        <button type="button" className="btn-secondary">
+          <FormattedMessage id="button.cancel" />
+        </button>
+      </div>
+    </form>
+  );
+};
+
+// ... existing code ...
+const createCSPHeader = (config: CSPConfig, isDevelopment = false): string => {
+  const directives = Object.entries(config)
+    .map(([key, values]) => {
+      const directive = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+      return `${directive} ${values.join(' ')}`;
+    })
+    .join('; ');
+  // 開發環境允許 unsafe-eval 用於 HMR
+  if (isDevelopment) {
+    return directives.replace(
+      'script-src',
+      "script-src 'unsafe-eval'"
+    );
+  }
+  return directives;
+};
+
+// ✓ CSP 對比範例
+
+// ✓ 正例
+const csp = createCSPHeader({
+  defaultSrc: ["'self'"],
+  scriptSrc: ["'self'", "https://trusted.cdn.com"],
+  styleSrc: ["'self'", "https://fonts.googleapis.com"],
+  imgSrc: ["'self'", "data:"],
+  connectSrc: ["'self'"],
+  fontSrc: ["'self'", "https://fonts.gstatic.com"],
+  objectSrc: ["'none'"],
+  mediaSrc: ["'self'"],
+  frameSrc: ["'none'"],
+});
+
+// ✗ 反例
+const cspBad = createCSPHeader({
+  defaultSrc: ["*"],
+  scriptSrc: ["*"],
+  styleSrc: ["*"],
+  imgSrc: ["*"],
+  connectSrc: ["*"],
+  fontSrc: ["*"],
+  objectSrc: ["*"],
+  mediaSrc: ["*"],
+  frameSrc: ["*"],
+});
+// 失敗原因：允許所有來源，無法防止 XSS 與資源注入攻擊。
+
+// ...
+// 圖像、影片與媒體
+// lazy loading、AVIF/WebP、canvas/WebGL 整合
+const OptimizedImage = ({ src, alt, width, height }) => (
+  <picture>
+    <source srcSet={src.replace('.jpg', '.avif')} type="image/avif" />
+    <source srcSet={src.replace('.jpg', '.webp')} type="image/webp" />
+    <img src={src} alt={alt} loading="lazy" width={width} height={height} />
+  </picture>
+);
+
+// WebGL 整合
+import { useRef, useEffect } from 'react';
+const WebGLCanvas = () => {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const gl = canvas.getContext('webgl');
+    if (!gl) return;
+    // WebGL 初始化與繪製...
+  }, []);
+  return <canvas ref={canvasRef} width={640} height={480} />;
+};
+
+// Progressive Web App
+// Service Worker、離線策略、背景同步
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(
+      reg => console.log('SW registered', reg),
+      err => console.error('SW registration failed', err)
+    );
+  });
+}
+
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(response => response || fetch(event.request))
+  );
+});
+
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-comments') {
+    event.waitUntil(syncComments());
+  }
+});
+
+// Server Components 與邊緣渲染
+// React 服務端元件原理、RSC + Bun、Edge Runtime secure fetch
+export default function Page() {
+  const data = fetchDataFromDB();
+  return <div>{data.title}</div>;
+}
+
+export async function edgeHandler(request) {
+  const res = await fetch('https://api.example.com/data', {
+    headers: { 'Authorization': `Bearer ${process.env.API_TOKEN}` },
+    cache: 'no-store',
+  });
+  return new Response(await res.text());
+}
+
+// MobX／Zustand／Redux Toolkit 專章
+// 比較選型、效能陷阱與最佳實踐
+import create from 'zustand';
+const useStore = create(set => ({
+  count: 0,
+  inc: () => set(state => ({ count: state.count + 1 })),
+}));
+
+import { configureStore, createSlice } from '@reduxjs/toolkit';
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: 0,
+  reducers: {
+    increment: state => state + 1,
+    decrement: state => state - 1,
+  },
+});
+const store = configureStore({ reducer: { counter: counterSlice.reducer } });
+// 正例：選擇 Zustand 處理本地 UI 狀態，Redux Toolkit 處理全域業務狀態。
+// 反例：MobX 用於大型多人協作專案，導致狀態追蹤困難與效能瓶頸。
+// 失敗原因：MobX 的隱式依賴追蹤在大型專案中易出現不可預期的重渲染。
+
+// Monorepo 與模組化
+// Turborepo 2、Nx、pnpm workspaces、包裝庫設計
+// package.json
+// {
+//   "name": "my-monorepo",
+//   "private": true,
+//   "workspaces": [
+//     "packages/*",
+//     "apps/*"
+//   ]
+// }
+
+// CI/CD 與部署
+// Vite + Docker、多環境配置、GitHub Actions、自動化回歸測試
+// .github/workflows/ci.yml
+// name: CI
+// on: [push, pull_request]
+// jobs:
+//   build:
+//     runs-on: ubuntu-latest
+//     steps:
+//       - uses: actions/checkout@v3
+//       - uses: pnpm/action-setup@v2
+//         with:
+//           version: 8
+//       - run: pnpm install
+//       - run: pnpm build
+//       - run: pnpm test
+
+// 可觀測性與日誌
+// OpenTelemetry、Sentry、Logflare、Edge 追蹤
+import * as Sentry from '@sentry/react';
+Sentry.init({
+  dsn: 'https://xxx@sentry.io/123',
+  integrations: [new Sentry.BrowserTracing()],
+  tracesSampleRate: 1.0,
+});
+
+// 升級與遷移指南
+// React 18 → 19、Legacy Context、Class Component 共存策略
+// 1. 檢查所有第三方套件相容性
+// 2. 逐步替換舊 API（如 legacy context、UNSAFE_ 前綴方法）
+// 3. 使用 codemod 工具自動轉換
+// npx react-codemod update-react-19
+
+// 附錄
+// 詞彙表、延伸閱讀、常見問答
+// RSC：React Server Components
+// Suspense：React 串流與異步邊界
+// Transition：React 19 並發狀態切換 API
+// Zod：TypeScript 型別驗證函式庫
+// MSW：Mock Service Worker，API 測試工具
+// ...
+// Call-To-Action
+// 立即用本手冊的「自我檢查清單」審核你的現有專案，找出可優化的架構、效能與安全環節。將每一項反思盒問題實際演練，並將最佳實踐落實於日常開發流程。唯有持續檢查與精進，才能真正晉升 React 架構師之路！
