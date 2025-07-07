@@ -1,0 +1,4 @@
+---
+rule_type: always
+---
+在處理使用者請求時，**始終**在提示最前面自動添加：@Docs OWASP Top Ten
