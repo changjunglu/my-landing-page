@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 import { FormattedMessage } from 'react-intl';
+import profileImg from '../assets/images/images.jpeg';
 
 const Home: React.FC = () => {
   return (
@@ -32,7 +33,17 @@ const Home: React.FC = () => {
             </div>
             <div className="hero-image">
               <div className="profile-placeholder">
-                <span role="img" aria-label="開發者">👨‍💻</span>
+                <img
+                  src={profileImg}
+                  alt="開發者"
+                  style={{
+                    width: 128,
+                    height: 128,
+                    display: 'block',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                  }}
+                />
               </div>
             </div>
           </div>

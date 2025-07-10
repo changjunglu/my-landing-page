@@ -126,7 +126,7 @@
 - 姓名: A
 - Email: test@fail
 - 訊息: hi
-- 惡意腳本: <script>alert(1)</script>
+- 惡意腳本: `<script>alert(1)</script>`
 
 ### 🔄 測試步驟
 1. **步驟1**: 輸入有效資料並送出

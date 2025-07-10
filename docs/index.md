@@ -24,3 +24,16 @@
 ::: tip
 本文件支援 Mermaid 圖表，請參見各章節流程圖/ERD。
 ::: 
+
+# Mermaid 測試
+
+```mermaid
+graph TD
+  A --> B
+```
+
+```mermaid
+flowchart TD
+  A --> B
+  B --> C
+``` 

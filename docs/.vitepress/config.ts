@@ -1,5 +1,7 @@
 import { defineConfig } from 'vitepress';
 
+console.log('VitePress config loaded');
+
 export default defineConfig({
   title: 'Chang Jung Lu 開發者文件',
   description: '個人品牌網站全套產品文件與開發規範',

@@ -9,6 +9,7 @@ import { FormattedMessage } from 'react-intl';
 const contactSchema = z.object({
   name: z.string().min(2, 'contact.nameMin'),
   email: z.string().email('contact.emailInvalid'),
+  phone: z.string().optional(),
   message: z.string().min(10, 'contact.messageMin'),
 });
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -96,6 +97,18 @@ const Contact: React.FC = () => {
                   <FormattedMessage id={errors.name.message || 'contact.nameMin'} defaultMessage="姓名至少2個字元" />
                 </span>
               )}
+            </div>
+            <div className="form-group">
+              <label htmlFor="phone">
+                <FormattedMessage id="contact.phone" defaultMessage="電話" />
+              </label>
+              <input
+                id="phone"
+                type="tel"
+                {...register('phone')}
+                autoComplete="tel"
+                placeholder="請輸入電話號碼"
+              />
             </div>
             <div className="form-group">
               <label htmlFor="email">

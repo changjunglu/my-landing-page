@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { IntlProvider } from 'react-intl';
+import { StagewiseToolbar } from '@stagewise/toolbar-react';
 
-const messages = {
+const messages: Record<'zh-TW' | 'en-US' | 'ja-JP', Record<string, string>> = {
   'zh-TW': {
     'home.greeting': '你好，我是 ',
     'home.subtitle': '專業的軟體開發工程師，專精於 React.js、Node.js 和雲端技術',
@@ -28,6 +29,7 @@ const messages = {
     'contact.nameMin': '姓名至少2個字元',
     'contact.emailInvalid': '請輸入有效的電子郵件',
     'contact.messageMin': '訊息至少10個字元',
+    'contact.phone': '電話',
   },
   'en-US': {
     'home.greeting': 'Hello, I am ',
@@ -52,6 +54,7 @@ const messages = {
     'contact.nameMin': 'Name must be at least 2 characters',
     'contact.emailInvalid': 'Please enter a valid email address',
     'contact.messageMin': 'Message must be at least 10 characters',
+    'contact.phone': 'Phone',
   },
   'ja-JP': {
     'home.greeting': 'こんにちは、私は',
@@ -76,16 +79,17 @@ const messages = {
     'contact.nameMin': 'お名前は2文字以上で入力してください',
     'contact.emailInvalid': '有効なメールアドレスを入力してください',
     'contact.messageMin': 'メッセージは10文字以上で入力してください',
+    'contact.phone': '電話',
   },
 };
 
-function detectLocale(): string {
+function detectLocale(): 'zh-TW' | 'en-US' | 'ja-JP' {
   const saved = localStorage.getItem('locale');
-  if (saved && messages[saved]) return saved;
+  if (saved && messages[saved as 'zh-TW' | 'en-US' | 'ja-JP']) return saved as 'zh-TW' | 'en-US' | 'ja-JP';
   const browser = navigator.language;
-  if (messages[browser]) return browser;
+  if (messages[browser as 'zh-TW' | 'en-US' | 'ja-JP']) return browser as 'zh-TW' | 'en-US' | 'ja-JP';
   const short = browser.split('-')[0];
-  const match = Object.keys(messages).find((k) => k.startsWith(short));
+  const match = (Object.keys(messages) as Array<'zh-TW' | 'en-US' | 'ja-JP'>).find((k) => k.startsWith(short));
   return match || 'zh-TW';
 }
 
@@ -97,4 +101,23 @@ root.render(
     {/** IntlProvider 必須用作 function component 包裹 children，否則型別會報錯 */}
     {React.createElement(IntlProvider, { locale, messages: messages[locale], defaultLocale: 'zh-TW' }, <App />)}
   </React.StrictMode>
-); 
+);
+
+// 初始化 Stagewise Toolbar
+const toolbarConfig = {
+  plugins: [], // 你可以在這裡加入自訂 plugin
+};
+
+if (import.meta.env.VITE_STAGEWISE !== 'off') {
+  document.addEventListener('DOMContentLoaded', () => {
+    const toolbarRoot = document.createElement('div');
+    toolbarRoot.id = 'stagewise-toolbar-root';
+    document.body.appendChild(toolbarRoot);
+
+    ReactDOM.createRoot(toolbarRoot).render(
+      <React.StrictMode>
+        <StagewiseToolbar config={toolbarConfig} />
+      </React.StrictMode>
+    );
+  });
+} 

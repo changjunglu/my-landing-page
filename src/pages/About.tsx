@@ -1,12 +1,26 @@
 import React from 'react';
 import './About.css';
 import { FormattedMessage } from 'react-intl';
+import profileImg from '../assets/images/images.jpeg';
 
 const About: React.FC = () => {
   return (
     <div className="about">
       <section className="about-hero">
         <div className="container">
+          <div className="profile-placeholder">
+            <img
+              src={profileImg}
+              alt="開發者"
+              style={{
+                width: 80,
+                height: 80,
+                display: 'block',
+                borderRadius: '50%',
+                objectFit: 'cover',
+              }}
+            />
+          </div>
           <h1 className="section-title">
             <FormattedMessage id="about.title" defaultMessage="關於我" />
           </h1>
