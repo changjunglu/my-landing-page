@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import DOMPurify from 'dompurify';
 import { FormattedMessage } from 'react-intl';
+import { supabase } from '../supabaseClient';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'contact.nameMin'),
@@ -29,10 +30,16 @@ const Contact: React.FC = () => {
     const sanitized = {
       name: DOMPurify.sanitize(data.name),
       email: DOMPurify.sanitize(data.email),
+      phone: data.phone ? DOMPurify.sanitize(data.phone) : null,
       message: DOMPurify.sanitize(data.message),
+      status: 'new',
     };
-    // 模擬送出
-    await new Promise((r) => setTimeout(r, 800));
+    // 寫入 Supabase
+    const { error } = await supabase.from('contact_form').insert([sanitized]);
+    if (error) {
+      alert('送出失敗，請稍後再試！');
+      return;
+    }
     alert('訊息已送出！');
     reset();
   };
