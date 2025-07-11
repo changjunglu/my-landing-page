@@ -2,6 +2,7 @@ import React from 'react';
 import './About.css';
 import { FormattedMessage } from 'react-intl';
 import profileImg from '../assets/images/images.jpeg';
+import { GlowingEffect } from '@/components/ui/glowing-effect';
 
 const About: React.FC = () => {
   return (
@@ -50,6 +51,7 @@ const About: React.FC = () => {
             </div>
             
             <div className="about-stats">
+              <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={3} />
               <div className="stat-card">
                 <div className="stat-number">5+</div>
                 <div className="stat-label">年開發經驗</div>

@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import './Home.css';
 import { FormattedMessage } from 'react-intl';
 import profileImg from '../assets/images/images.jpeg';
+import { GlowingEffect } from '@/components/ui/glowing-effect';
+import { FeaturesSectionWithHoverEffects } from '@/components/blocks/feature-section-with-hover-effects';
+import { LiquidButton } from '@/components/ui/liquid-glass-button';
 
 const Home: React.FC = () => {
   return (
@@ -57,25 +60,29 @@ const Home: React.FC = () => {
           <p className="section-subtitle">我擅長的技術領域</p>
           
           <div className="skills-grid">
-            <div className="skill-card">
+            <div className="skill-card relative overflow-visible rounded-xl border border-gray-200 bg-white p-8 shadow-md transition-all duration-300 hover:shadow-xl">
+              <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={3} />
               <div className="skill-icon">⚛️</div>
               <h3>前端開發</h3>
               <p>React.js, Vue.js, HTML5, CSS3, JavaScript, TypeScript</p>
             </div>
             
-            <div className="skill-card">
+            <div className="skill-card relative overflow-visible rounded-xl border border-gray-200 bg-white p-8 shadow-md transition-all duration-300 hover:shadow-xl">
+              <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={3} />
               <div className="skill-icon">🚀</div>
               <h3>後端開發</h3>
               <p>Node.js, Express, Django, Spring Boot, RESTful APIs</p>
             </div>
             
-            <div className="skill-card">
+            <div className="skill-card relative overflow-visible rounded-xl border border-gray-200 bg-white p-8 shadow-md transition-all duration-300 hover:shadow-xl">
+              <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={3} />
               <div className="skill-icon">🗄️</div>
               <h3>資料庫</h3>
               <p>MySQL, PostgreSQL, MongoDB, Redis</p>
             </div>
             
-            <div className="skill-card">
+            <div className="skill-card relative overflow-visible rounded-xl border border-gray-200 bg-white p-8 shadow-md transition-all duration-300 hover:shadow-xl">
+              <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={3} />
               <div className="skill-icon">☁️</div>
               <h3>雲端服務</h3>
               <p>AWS, Google Cloud Platform, Azure, Docker, Kubernetes</p>

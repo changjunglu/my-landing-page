@@ -42,6 +42,7 @@ const ProjectCard: React.FC<{ project: Project }> = React.memo(({ project }) => 
             {link.label}
           </a>
         ))}
+        <a href="/demo" className="btn btn-secondary">Demo</a>
       </div>
     </div>
   </div>

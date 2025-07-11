@@ -4,6 +4,9 @@ import './index.css';
 import App from './App';
 import { IntlProvider } from 'react-intl';
 import { StagewiseToolbar } from '@stagewise/toolbar-react';
+import { cn } from "@/utils/cn";
+import { FeaturesSectionWithHoverEffects } from "@/components/blocks/feature-section-with-hover-effects";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const messages: Record<'zh-TW' | 'en-US' | 'ja-JP', Record<string, string>> = {
   'zh-TW': {
