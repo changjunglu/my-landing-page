@@ -59,6 +59,15 @@ create index if not exists idx_contact_phone on contact_form(phone);
 - 可直接用 Supabase Table Editor 建立，或用 SQL 執行上述 DDL。
 - 前端可用 @supabase/supabase-js 直接 insert 聯絡表單資料。
 - 欄位型別與驗證規則建議與前端同步。
+- 前端驗證規則（zod schema 範例）：
+  ```ts
+  const contactSchema = z.object({
+    name: z.string().min(2),
+    email: z.string().email(),
+    phone: z.string().optional(),
+    message: z.string().min(10),
+  });
+  ```
 
 ---
 
